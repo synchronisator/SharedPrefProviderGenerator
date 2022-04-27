@@ -22,23 +22,27 @@ class Generator {
   String generateCode(List<Item> items) {
     String code = template;
     for (var element in items.reversed) {
+      var name = element.name.trim().isEmpty ? "undefined" : element.name.trim();
+      var type = element.type;
+      var defaultValue = element.defaultValue.toString().trim();
+
       String key = "key" +
-          element.name.toUpperCase().substring(0, 1) +
-          element.name.substring(1);
+          name.toUpperCase().substring(0, 1) +
+          name.substring(1);
       code = code.replaceFirst(
           "/// Keys", "/// Keys\n  static const String $key = '$key';");
       code = code.replaceFirst("/// Values",
-          "/// Values\n  ${element.type.getString()} _${element.name} = ${element.defaultValue.toString()};");
+          "/// Values\n  ${type.getString()} _$name = $defaultValue;");
       code = code.replaceFirst("// Initialization",
-          "// Initialization\n  _${element.name} = _prefs.${element.type.getGetter()}($key) ?? ${element.defaultValue.toString()};");
+          "// Initialization\n  _$name = _prefs.${type.getGetter()}($key) ?? $defaultValue;");
       code = code.replaceFirst("///Getter",
-          "///Getter\n  ${element.type.getString()} get ${element.name} => _${element.name};");
+          "///Getter\n  ${type.getString()} get $name => _$name;");
       code = code.replaceFirst(
           "///Setter",
           "///Setter\n  "
-              "  set ${element.name}(${element.type.getString()} value) {\n"
-              "    _${element.name} = value;\n"
-              "    _prefs.${element.type.getSetter()}($key, value);\n"
+              "  set $name(${type.getString()} value) {\n"
+              "    _$name = value;\n"
+              "    _prefs.${type.getSetter()}($key, value);\n"
               "  }\n");
     }
     return code;

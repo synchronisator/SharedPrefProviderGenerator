@@ -33,6 +33,9 @@ class _ValueListItemState extends State<ValueListItem> {
       });
     });
 
+    nameValid = widget.item.name.isNotEmpty &&
+        widget.item.name.startsWith(RegExp(r'[a-z]'));
+
     textEditingControllerDefault =
         TextEditingController(text: widget.item.defaultValue.toString());
     textEditingControllerDefault.addListener(() {
@@ -50,6 +53,8 @@ class _ValueListItemState extends State<ValueListItem> {
         }
       });
     });
+    defaultValid = widget.item.type.isValid(widget.item.defaultValue);
+
     super.initState();
   }
 
@@ -71,6 +76,9 @@ class _ValueListItemState extends State<ValueListItem> {
             if (newValue != null) {
               setState(() {
                 widget.item.type = newValue;
+                textEditingController.notifyListeners();
+                textEditingControllerDefault.notifyListeners();
+                widget.f();
               });
             }
           },

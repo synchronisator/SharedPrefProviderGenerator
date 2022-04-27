@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:sharedprefprovidergenerator/genarator.dart';
+import 'package:sharedprefprovidergenerator/generator.dart';
 import 'package:sharedprefprovidergenerator/item.dart';
 import 'package:sharedprefprovidergenerator/listitem.dart';
 
@@ -30,7 +30,7 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
-  List<Item> items = [];
+  List<Item> items = [Item(ItemType.string, "example", "dummy")];
 
   @override
   Widget build(BuildContext context) {
