@@ -43,6 +43,7 @@ class Generator {
               "  set $name(${type.getString()} value) {\n"
               "    _$name = value;\n"
               "    _prefs.${type.getSetter()}($key, value);\n"
+              "    notifyListeners();\n"
               "  }\n");
     }
     return code;
