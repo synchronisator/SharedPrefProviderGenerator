@@ -1,12 +1,12 @@
-
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:sharedprefprovidergenerator/data_provider.dart';
 import 'package:sharedprefprovidergenerator/item.dart';
 
 class ValueListItem extends StatefulWidget {
-  final Item item;
-  final Function f;
+  final int itemIndex;
 
-  ValueListItem(this.item, this.f, {Key? key}) : super(key: key);
+  const ValueListItem(this.itemIndex, {Key? key}) : super(key: key);
 
   @override
   State<ValueListItem> createState() => _ValueListItemState();
@@ -21,41 +21,46 @@ class _ValueListItemState extends State<ValueListItem> {
 
   @override
   void initState() {
-    textEditingController = TextEditingController(text: widget.item.name);
+    Item item = Provider.of<DataProvider>(context, listen: false)
+        .items[widget.itemIndex];
+    textEditingController = TextEditingController(text: item.name);
     textEditingController.addListener(() {
       setState(() {
-        nameValid = textEditingController.text.isNotEmpty &&
-            textEditingController.text.startsWith(RegExp(r'[a-z]'));
-        if(nameValid){
-          widget.item.name = textEditingController.text;
-          widget.f();
-        }
+        validateName();
       });
     });
-
-    nameValid = widget.item.name.isNotEmpty &&
-        widget.item.name.startsWith(RegExp(r'[a-z]'));
+    nameValid = item.name.isNotEmpty && item.name.startsWith(RegExp(r'[a-z]'));
 
     textEditingControllerDefault =
-        TextEditingController(text: widget.item.defaultValue.toString());
+        TextEditingController(text: item.defaultValue.toString());
     textEditingControllerDefault.addListener(() {
       setState(() {
-        defaultValid =
-            widget.item.type.isValid(textEditingControllerDefault.text);
-
-        if(defaultValid){
-          if (widget.item.type == ItemType.string) {
-            widget.item.defaultValue = "'${textEditingControllerDefault.text}'";
-          } else {
-            widget.item.defaultValue = textEditingControllerDefault.text;
-          }
-          widget.f();
-        }
+        validateDefaultValue();
       });
     });
-    defaultValid = widget.item.type.isValid(widget.item.defaultValue);
+    defaultValid = item.type.isValid(item.defaultValue);
 
     super.initState();
+  }
+
+  void validateName() {
+    nameValid = textEditingController.text.isNotEmpty &&
+        textEditingController.text.startsWith(RegExp(r'[a-z]'));
+    if (nameValid) {
+      Provider.of<DataProvider>(context, listen: false)
+          .setItemName(widget.itemIndex, textEditingController.text);
+    }
+  }
+
+  void validateDefaultValue() {
+    defaultValid = Provider.of<DataProvider>(context, listen: false)
+        .items[widget.itemIndex]
+        .type
+        .isValid(textEditingControllerDefault.text);
+    if (defaultValid) {
+      Provider.of<DataProvider>(context, listen: false)
+          .setItemDefault(widget.itemIndex, textEditingControllerDefault.text);
+    }
   }
 
   @override
@@ -67,23 +72,24 @@ class _ValueListItemState extends State<ValueListItem> {
 
   @override
   Widget build(BuildContext context) {
+    Item item = Provider.of<DataProvider>(context, listen: true)
+        .items[widget.itemIndex];
     return Card(
       child: ListTile(
         leading: DropdownButton<ItemType>(
-          value: widget.item.type,
+          value: item.type,
           icon: const Icon(Icons.arrow_downward),
           onChanged: (ItemType? newValue) {
             if (newValue != null) {
               setState(() {
-                widget.item.type = newValue;
-                textEditingController.notifyListeners();
-                textEditingControllerDefault.notifyListeners();
-                widget.f();
+                item.type = newValue;
+                validateName();
+                validateDefaultValue();
               });
             }
           },
           items:
-          ItemType.values.map<DropdownMenuItem<ItemType>>((ItemType value) {
+              ItemType.values.map<DropdownMenuItem<ItemType>>((ItemType value) {
             return DropdownMenuItem<ItemType>(
               value: value,
               child: Text(value.getString()),
@@ -94,14 +100,14 @@ class _ValueListItemState extends State<ValueListItem> {
           padding: const EdgeInsets.only(top: 4.0),
           child: TextField(
             controller: textEditingController,
-            decoration: InputDecoration(hintText: "name"),
+            decoration: const InputDecoration(hintText: "name"),
             style: TextStyle(color: nameValid ? Colors.black : Colors.red),
           ),
         ),
         subtitle: TextField(
           controller: textEditingControllerDefault,
-          decoration: InputDecoration(
-              hintText: "defaultvalue ${widget.item.type.hintText()}"),
+          decoration:
+              InputDecoration(hintText: "defaultValue ${item.type.hintText()}"),
           style: TextStyle(color: defaultValid ? Colors.black : Colors.red),
         ),
       ),

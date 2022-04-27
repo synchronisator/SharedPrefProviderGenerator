@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
+import 'package:sharedprefprovidergenerator/data_provider.dart';
 import 'package:sharedprefprovidergenerator/generator.dart';
 import 'package:sharedprefprovidergenerator/item.dart';
 import 'package:sharedprefprovidergenerator/listitem.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(MultiProvider(providers: [
+    ChangeNotifierProvider(create: (BuildContext context) => DataProvider()),
+  ], child: const MyApp()));
 }
 
 class MyApp extends StatelessWidget {
@@ -22,18 +27,13 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class MainPage extends StatefulWidget {
+class MainPage extends StatelessWidget {
   const MainPage({Key? key}) : super(key: key);
 
   @override
-  State<MainPage> createState() => _MainPageState();
-}
-
-class _MainPageState extends State<MainPage> {
-  List<Item> items = [Item(ItemType.string, "example", "dummy")];
-
-  @override
   Widget build(BuildContext context) {
+    List<Item> items = context.watch<DataProvider>().items;
+    String generatedCode = Generator.generateCode(items);
     return Scaffold(
       backgroundColor: Colors.blueGrey,
       appBar: AppBar(
@@ -50,25 +50,45 @@ class _MainPageState extends State<MainPage> {
                 itemBuilder: (context, index) {
                   if (index == items.length) {
                     return IconButton(
-                      onPressed: () => setState(() {
-                        items.add(Item(ItemType.string, "", ""));
-                      }),
+                      onPressed: () => context
+                          .read<DataProvider>()
+                          .addItem(Item(ItemType.string, "", "")),
                       icon: const Icon(Icons.add),
                     );
                   }
-                  return ValueListItem(items[index], () => setState(() {}));
+                  return ValueListItem(index);
                 },
               ),
             ),
           ),
           Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: Card(
-                child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: SelectableText(Generator().generateCode(items)),
-            )),
-          )
+              padding: const EdgeInsets.all(20.0),
+              child: Card(
+                child: Stack(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: SelectableText(generatedCode),
+                    ),
+                    Positioned(
+                        bottom: 10,
+                        right: 10,
+                        child: ElevatedButton(
+                            onPressed: () {
+                              Clipboard.setData(
+                                  ClipboardData(text: generatedCode));
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                      content:
+                                          Text("Code copied to clipboard")));
+                            },
+                            child: const Padding(
+                              padding: EdgeInsets.all(8.0),
+                              child: Icon(Icons.copy),
+                            ))),
+                  ],
+                ),
+              ))
         ],
       )),
     );

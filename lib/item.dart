@@ -1,7 +1,7 @@
 class Item {
   ItemType type;
   String name;
-  var defaultValue;
+  String defaultValue;
 
   Item(this.type, this.name, this.defaultValue);
 }
@@ -48,7 +48,7 @@ extension ItemTypeString on ItemType {
     }
   }
 
-  String getGetter(){
+  String getGetter() {
     switch (this) {
       case ItemType.string:
         return "getString";
@@ -61,7 +61,7 @@ extension ItemTypeString on ItemType {
     }
   }
 
-  String getSetter(){
+  String getSetter() {
     switch (this) {
       case ItemType.string:
         return "setString";
