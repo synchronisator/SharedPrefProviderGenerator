@@ -6,6 +6,12 @@ class DataProvider extends ChangeNotifier {
 
   List<Item> get items => _items;
 
+  set items(List<Item> value) {
+    _items.clear();
+    _items.addAll(value);
+    notifyListeners();
+  }
+
   void addItem(Item item) {
     items.add(item);
     notifyListeners();

@@ -48,4 +48,21 @@ class Generator {
     }
     return code;
   }
+
+  static String generateLines(List<Item> items) {
+    return items.map((e) => "${e.type.getString()} ${e.name} = ${e.defaultValue};").toList().join("\n");
+  }
+
+  static List<Item> generateItems(String string) {
+    List<Item> ret = [];
+    RegExp exp = RegExp(r"^(.*) (.*)=(.*);");
+    List<String> split = string.split("\n");
+    for (var element in split) {
+      RegExpMatch match = exp.allMatches(element.trim()).elementAt(0);
+      ret.add(Item(ItemType.string, match.group(2).toString().trim(), match.group(3).toString().trim()));
+    }
+
+    return ret;
+  }
+
 }
