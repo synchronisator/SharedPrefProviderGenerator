@@ -73,46 +73,44 @@ class _AddDialogState extends State<AddDialog> {
     return AlertDialog(
       title: const Text("Settings"),
       content: SingleChildScrollView(
-        child: Container(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              DropdownButton<ItemType>(
-                value: widget.item.type,
-                icon: const Icon(Icons.arrow_downward),
-                onChanged: (ItemType? newValue) {
-                  if (newValue != null) {
-                    setState(() {
-                      widget.item.type = newValue;
-                      validateName();
-                      validateDefaultValue();
-                    });
-                  }
-                },
-                items:
-                ItemType.values.map<DropdownMenuItem<ItemType>>((ItemType value) {
-                  return DropdownMenuItem<ItemType>(
-                    value: value,
-                    child: Text(value.getString()),
-                  );
-                }).toList(),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            DropdownButton<ItemType>(
+              value: widget.item.type,
+              icon: const Icon(Icons.arrow_downward),
+              onChanged: (ItemType? newValue) {
+                if (newValue != null) {
+                  setState(() {
+                    widget.item.type = newValue;
+                    validateName();
+                    validateDefaultValue();
+                  });
+                }
+              },
+              items:
+              ItemType.values.map<DropdownMenuItem<ItemType>>((ItemType value) {
+                return DropdownMenuItem<ItemType>(
+                  value: value,
+                  child: Text(value.getString()),
+                );
+              }).toList(),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(top: 4.0),
+              child: TextField(
+                controller: textEditingController,
+                decoration: const InputDecoration(hintText: "name"),
+                style: TextStyle(color: nameValid ? Colors.black : Colors.red),
               ),
-              Padding(
-                padding: const EdgeInsets.only(top: 4.0),
-                child: TextField(
-                  controller: textEditingController,
-                  decoration: const InputDecoration(hintText: "name"),
-                  style: TextStyle(color: nameValid ? Colors.black : Colors.red),
-                ),
-              ),
-              TextField(
-                controller: textEditingControllerDefault,
-                decoration:
-                InputDecoration(hintText: "defaultValue ${widget.item.type.hintText()}"),
-                style: TextStyle(color: defaultValid ? Colors.black : Colors.red),
-              ),
-            ],
-          ),
+            ),
+            TextField(
+              controller: textEditingControllerDefault,
+              decoration:
+              InputDecoration(hintText: "defaultValue ${widget.item.type.hintText()}"),
+              style: TextStyle(color: defaultValid ? Colors.black : Colors.red),
+            ),
+          ],
         ),
       ),
 

@@ -7,7 +7,6 @@ import 'package:sharedprefprovidergenerator/add_dialog.dart';
 import 'package:sharedprefprovidergenerator/data_provider.dart';
 import 'package:sharedprefprovidergenerator/generator.dart';
 import 'package:sharedprefprovidergenerator/item.dart';
-import 'package:sharedprefprovidergenerator/listitem.dart';
 
 void main() {
   runApp(MultiProvider(providers: [
@@ -23,7 +22,8 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'SharedPrefsProviderGenerator',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        primarySwatch: Colors.grey,
+        scaffoldBackgroundColor: Colors.blueGrey
       ),
       home: const MainPage(),
     );
@@ -60,7 +60,6 @@ class _MainPageState extends State<MainPage> {
   Widget build(BuildContext context) {
     String generatedCode = context.watch<DataProvider>().getGeneratedCode();
     return Scaffold(
-      backgroundColor: Colors.blueGrey,
       appBar: AppBar(
         title: const Text('SharedPrefsProviderGenerator'),
       ),
@@ -94,15 +93,18 @@ class _MainPageState extends State<MainPage> {
                               trailing: Wrap(
                                 children: [
                                   IconButton(onPressed: () => showEditDialog(itemAt), icon: const Icon(Icons.edit),),
-                                  IconButton(onPressed: () => context.read<DataProvider>().delete(itemAt), icon: Icon(Icons.delete),),
+                                  IconButton(onPressed: () => context.read<DataProvider>().delete(itemAt), icon: const Icon(Icons.delete),),
                                 ],
                               ),
                             ),
                           );
                         }
-                        return IconButton(
-                          onPressed: () => showAddDialog(),
-                          icon: const Icon(Icons.add),
+                        return Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: FloatingActionButton(
+                            onPressed: () => showAddDialog(),
+                            child: const Icon(Icons.add),
+                          ),
                         );
                       },
                     ),
