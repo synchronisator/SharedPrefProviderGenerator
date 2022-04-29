@@ -4,9 +4,9 @@ import 'package:sharedprefprovidergenerator/data_provider.dart';
 import 'package:sharedprefprovidergenerator/item.dart';
 
 class ValueListItem extends StatefulWidget {
-  final int itemIndex;
+  final Item item;
 
-  const ValueListItem(this.itemIndex, {Key? key}) : super(key: key);
+  const ValueListItem(this.item, {Key? key}) : super(key: key);
 
   @override
   State<ValueListItem> createState() => _ValueListItemState();
@@ -21,24 +21,22 @@ class _ValueListItemState extends State<ValueListItem> {
 
   @override
   void initState() {
-    Item item = Provider.of<DataProvider>(context, listen: false)
-        .items[widget.itemIndex];
-    textEditingController = TextEditingController(text: item.name);
+    textEditingController = TextEditingController(text: widget.item.name);
     textEditingController.addListener(() {
       setState(() {
         validateName();
       });
     });
-    nameValid = item.name.isNotEmpty && item.name.startsWith(RegExp(r'[a-z]'));
+    nameValid = widget.item.name.isNotEmpty && widget.item.name.startsWith(RegExp(r'[a-z]'));
 
     textEditingControllerDefault =
-        TextEditingController(text: item.defaultValue.toString());
+        TextEditingController(text: widget.item.defaultValue.toString());
     textEditingControllerDefault.addListener(() {
       setState(() {
         validateDefaultValue();
       });
     });
-    defaultValid = item.type.isValid(item.defaultValue);
+    defaultValid = widget.item.type.isValid(widget.item.defaultValue);
 
     super.initState();
   }
@@ -48,18 +46,17 @@ class _ValueListItemState extends State<ValueListItem> {
         textEditingController.text.startsWith(RegExp(r'[a-z]'));
     if (nameValid) {
       Provider.of<DataProvider>(context, listen: false)
-          .setItemName(widget.itemIndex, textEditingController.text);
+          .setItemName(widget.item, textEditingController.text);
     }
   }
 
   void validateDefaultValue() {
-    defaultValid = Provider.of<DataProvider>(context, listen: false)
-        .items[widget.itemIndex]
+    defaultValid = widget.item
         .type
         .isValid(textEditingControllerDefault.text);
     if (defaultValid) {
       Provider.of<DataProvider>(context, listen: false)
-          .setItemDefault(widget.itemIndex, textEditingControllerDefault.text);
+          .setItemDefault(widget.item, textEditingControllerDefault.text);
     }
   }
 
@@ -72,17 +69,15 @@ class _ValueListItemState extends State<ValueListItem> {
 
   @override
   Widget build(BuildContext context) {
-    Item item = Provider.of<DataProvider>(context, listen: true)
-        .items[widget.itemIndex];
     return Card(
       child: ListTile(
         leading: DropdownButton<ItemType>(
-          value: item.type,
+          value: widget.item.type,
           icon: const Icon(Icons.arrow_downward),
           onChanged: (ItemType? newValue) {
             if (newValue != null) {
               setState(() {
-                item.type = newValue;
+                widget.item.type = newValue;
                 validateName();
                 validateDefaultValue();
               });
@@ -107,7 +102,7 @@ class _ValueListItemState extends State<ValueListItem> {
         subtitle: TextField(
           controller: textEditingControllerDefault,
           decoration:
-              InputDecoration(hintText: "defaultValue ${item.type.hintText()}"),
+              InputDecoration(hintText: "defaultValue ${widget.item.type.hintText()}"),
           style: TextStyle(color: defaultValid ? Colors.black : Colors.red),
         ),
       ),

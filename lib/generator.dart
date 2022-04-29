@@ -26,8 +26,12 @@ class Generator {
           element.name.trim().isEmpty ? "undefined" : element.name.trim();
       var type = element.type;
       var defaultValue = element.defaultValue.toString().trim();
+      if (type == ItemType.string && !defaultValue.startsWith("\"") && !defaultValue.startsWith("'")) {
+        defaultValue = "'$defaultValue'";
+      }
 
-      String key =
+
+          String key =
           "key" + name.toUpperCase().substring(0, 1) + name.substring(1);
       code = code.replaceFirst(
           "/// Keys", "/// Keys\n  static const String $key = '$key';");
@@ -49,19 +53,21 @@ class Generator {
     return code;
   }
 
+  static final RegExp exp = RegExp(r"^([a-zA-Z]*) (.*)[ ]*=[ ]*(.*);");
+
   static String generateLines(List<Item> items) {
     return items.map((e) => "${e.type.getString()} ${e.name} = ${e.defaultValue};").toList().join("\n");
   }
 
   static List<Item> generateItems(String string) {
     List<Item> ret = [];
-    RegExp exp = RegExp(r"^(.*) (.*)=(.*);");
     List<String> split = string.split("\n");
     for (var element in split) {
-      RegExpMatch match = exp.allMatches(element.trim()).elementAt(0);
-      ret.add(Item(ItemType.string, match.group(2).toString().trim(), match.group(3).toString().trim()));
+      RegExpMatch? match = exp.firstMatch(element.trim());
+      if(match != null) {
+        ret.add(Item(ItemType.values.firstWhere((element) => element.name == match.group(1).toString().trim().toLowerCase()), match.group(2).toString().trim(), match.group(3).toString().trim()));
+      }
     }
-
     return ret;
   }
 

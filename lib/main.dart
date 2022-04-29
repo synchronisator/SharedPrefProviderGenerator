@@ -38,16 +38,21 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage> {
   final FlipCardController flipCardController = FlipCardController();
-  final TextEditingController textEditingController = TextEditingController();
+  late final TextEditingController textEditingController;
 
   @override
   void initState() {
+    textEditingController = TextEditingController();
     textEditingController.addListener(() {
-      setState(() {
-        context.read<DataProvider>().items = Generator.generateItems(textEditingController.text);
-      });
+      DataProvider().items = Generator.generateItems(textEditingController.text);
     });
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    textEditingController.dispose();
+    super.dispose();
   }
 
   @override
@@ -70,8 +75,7 @@ class _MainPageState extends State<MainPage> {
               FlipCard(
                 flipOnTouch: false,
                 controller: flipCardController,
-                fill: Fill.fillBack, // Fill the back side of the card to make in the same size as the front.
-                direction: FlipDirection.HORIZONTAL, // default
+                fill: Fill.fillBack,
                 front: Stack(
                   children: [
                     ListView.builder(
@@ -85,7 +89,7 @@ class _MainPageState extends State<MainPage> {
                             icon: const Icon(Icons.add),
                           );
                         }
-                        return ValueListItem(index);
+                        return ValueListItem(items[index]);
                       },
                     ),
                     Positioned(right: 0, child: FloatingActionButton(onPressed: () {
@@ -105,7 +109,11 @@ class _MainPageState extends State<MainPage> {
                         ),
                       ),
                     ),
-                    Positioned(right: 0, child: FloatingActionButton(onPressed: () => flipCardController.toggleCard(), child: const Icon(Icons.list))),
+                    Positioned(right: 0, child: FloatingActionButton(onPressed: () {
+                      setState(() {
+                        flipCardController.toggleCard();
+                      });
+                    }, child: const Icon(Icons.list))),
                   ],
                 ),
               ),

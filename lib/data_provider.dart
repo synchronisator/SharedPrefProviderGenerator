@@ -4,6 +4,12 @@ import 'package:sharedprefprovidergenerator/item.dart';
 class DataProvider extends ChangeNotifier {
   final List<Item> _items = [Item(ItemType.string, "example", "dummy")];
 
+  static final DataProvider _instance = DataProvider._internal();
+  factory DataProvider() => _instance;
+
+  DataProvider._internal();
+
+
   List<Item> get items => _items;
 
   set items(List<Item> value) {
@@ -17,17 +23,13 @@ class DataProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void setItemDefault(int itemIndex, String text) {
-    if (items[itemIndex].type == ItemType.string) {
-      items[itemIndex].defaultValue = "'$text'";
-    } else {
-      items[itemIndex].defaultValue = text;
-    }
+  void setItemDefault(Item item, String text) {
+    item.defaultValue = text;
     notifyListeners();
   }
 
-  void setItemName(int itemIndex, String text) {
-    items[itemIndex].name = text;
+  void setItemName(Item item, String text) {
+    item.name = text;
     notifyListeners();
   }
 }
