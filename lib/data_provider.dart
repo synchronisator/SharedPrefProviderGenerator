@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sharedprefprovidergenerator/generator.dart';
 import 'package:sharedprefprovidergenerator/item.dart';
 
 class DataProvider extends ChangeNotifier {
@@ -9,9 +10,6 @@ class DataProvider extends ChangeNotifier {
 
   DataProvider._internal();
 
-
-  List<Item> get items => _items;
-
   set items(List<Item> value) {
     _items.clear();
     _items.addAll(value);
@@ -19,7 +17,7 @@ class DataProvider extends ChangeNotifier {
   }
 
   void addItem(Item item) {
-    items.add(item);
+    _items.add(item);
     notifyListeners();
   }
 
@@ -30,6 +28,35 @@ class DataProvider extends ChangeNotifier {
 
   void setItemName(Item item, String text) {
     item.name = text;
+    notifyListeners();
+  }
+
+  int itemLength() {
+    return _items.length;
+  }
+
+  String getGeneratedCode() {
+    return Generator.generateCode(_items);
+  }
+
+  String getLines() {
+    return Generator.generateLines(_items);
+  }
+
+  Item? getItemAt(int index) {
+    if(index >= _items.length){
+      return null;
+    }
+    return _items[index];
+  }
+
+  void setItemType(Item item, ItemType type) {
+    item.type = type;
+    notifyListeners();
+  }
+
+  delete(Item item) {
+    _items.remove(item);
     notifyListeners();
   }
 }

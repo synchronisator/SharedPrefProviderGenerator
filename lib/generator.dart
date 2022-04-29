@@ -1,6 +1,8 @@
 import 'package:sharedprefprovidergenerator/item.dart';
 
 class Generator {
+
+  //TODO move as template to asset-folder
   static String template = "import 'package:flutter/material.dart';\n"
       "import 'package:shared_preferences/shared_preferences.dart';\n\n"
       "class SharedPrefsProvider extends ChangeNotifier {\n\n"

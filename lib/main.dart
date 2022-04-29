@@ -3,6 +3,7 @@ import 'package:flip_card/flip_card_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import 'package:sharedprefprovidergenerator/add_dialog.dart';
 import 'package:sharedprefprovidergenerator/data_provider.dart';
 import 'package:sharedprefprovidergenerator/generator.dart';
 import 'package:sharedprefprovidergenerator/item.dart';
@@ -57,8 +58,7 @@ class _MainPageState extends State<MainPage> {
 
   @override
   Widget build(BuildContext context) {
-    List<Item> items = context.watch<DataProvider>().items;
-    String generatedCode = Generator.generateCode(items);
+    String generatedCode = context.watch<DataProvider>().getGeneratedCode();
     return Scaffold(
       backgroundColor: Colors.blueGrey,
       appBar: AppBar(
@@ -79,21 +79,35 @@ class _MainPageState extends State<MainPage> {
                 front: Stack(
                   children: [
                     ListView.builder(
-                      itemCount: items.length + 1,
+                      itemCount: context.read<DataProvider>().itemLength() + 1,
                       itemBuilder: (context, index) {
-                        if (index == items.length) {
-                          return IconButton(
-                            onPressed: () => context
-                                .read<DataProvider>()
-                                .addItem(Item(ItemType.string, "", "")),
-                            icon: const Icon(Icons.add),
+                        Item? itemAt = context.watch<DataProvider>().getItemAt(index);
+                        if (itemAt != null) {
+                          return Card(
+                            child: ListTile(
+                              leading: Text(itemAt.type.getString()),
+                              title: Padding(
+                                padding: const EdgeInsets.only(top: 4.0),
+                                child: Text(itemAt.name),
+                              ),
+                              subtitle: Text(itemAt.defaultValue),
+                              trailing: Wrap(
+                                children: [
+                                  IconButton(onPressed: () => showEditDialog(itemAt), icon: const Icon(Icons.edit),),
+                                  IconButton(onPressed: () => context.read<DataProvider>().delete(itemAt), icon: Icon(Icons.delete),),
+                                ],
+                              ),
+                            ),
                           );
                         }
-                        return ValueListItem(items[index]);
+                        return IconButton(
+                          onPressed: () => showAddDialog(),
+                          icon: const Icon(Icons.add),
+                        );
                       },
                     ),
                     Positioned(right: 0, child: FloatingActionButton(onPressed: () {
-                      textEditingController.text = Generator.generateLines(items);
+                      textEditingController.text = context.read<DataProvider>().getLines();
                       flipCardController.toggleCard();
                     }, child: const Icon(Icons.article),)),
                   ],
@@ -117,7 +131,6 @@ class _MainPageState extends State<MainPage> {
                   ],
                 ),
               ),
-
             ),
           ),
           Expanded(
@@ -154,5 +167,21 @@ class _MainPageState extends State<MainPage> {
         ],
       )),
     );
+  }
+
+  showAddDialog() {
+    showDialog(
+        context: context,
+        builder: (_) {
+          return AddDialog(Item(ItemType.string, "", ""), true);
+        });
+  }
+
+  showEditDialog(Item item) {
+    showDialog(
+        context: context,
+        builder: (_) {
+          return AddDialog(item, false);
+        });
   }
 }
