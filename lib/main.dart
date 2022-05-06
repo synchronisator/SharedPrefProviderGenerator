@@ -139,32 +139,66 @@ class _MainPageState extends State<MainPage> {
             flex: 1,
             child: Padding(
                 padding: const EdgeInsets.all(20.0),
-                child: Card(
-                  child: Stack(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: SelectableText(generatedCode),
-                      ),
-                      Positioned(
-                          bottom: 10,
-                          right: 10,
-                          child: ElevatedButton(
-                              onPressed: () {
-                                Clipboard.setData(
-                                    ClipboardData(text: generatedCode));
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                        content:
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Card(
+                      child: Stack(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: SelectableText(Generator.mainTemplate),
+                          ),
+                          Positioned(
+                              bottom: 10,
+                              right: 10,
+                              child: ElevatedButton(
+                                  onPressed: () {
+                                    Clipboard.setData(
+                                        ClipboardData(text: Generator.mainTemplate));
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(
+                                            content:
                                             Text("Code copied to clipboard")));
-                              },
-                              child: const Padding(
-                                padding: EdgeInsets.all(8.0),
-                                child: Icon(Icons.copy),
-                              ))),
-                    ],
-                  ),
-                )),
+                                  },
+                                  child: const Padding(
+                                    padding: EdgeInsets.all(8.0),
+                                    child: Icon(Icons.copy),
+                                  ))),
+                        ],
+                      ),
+                    ),
+                    Expanded(
+                      child: Card(
+                        child: Stack(
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: SelectableText(generatedCode),
+                            ),
+                            Positioned(
+                                bottom: 10,
+                                right: 10,
+                                child: ElevatedButton(
+                                    onPressed: () {
+                                      Clipboard.setData(
+                                          ClipboardData(text: generatedCode));
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                          const SnackBar(
+                                              content:
+                                                  Text("Code copied to clipboard")));
+                                    },
+                                    child: const Padding(
+                                      padding: EdgeInsets.all(8.0),
+                                      child: Icon(Icons.copy),
+                                    ))),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                )
+            ),
           )
         ],
       )),
