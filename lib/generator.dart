@@ -5,11 +5,11 @@ class Generator {
 
   static String mainTemplate =
   "void main() async {\n"
-    "\tWidgetsFlutterBinding.ensureInitialized();\n"
-    "\tSharedPrefsProvider sharedPrefsProvider = await SharedPrefsProvider.create();\n"
-    "\trunApp(MultiProvider(providers: [\n"
-      "\t\tChangeNotifierProvider(create: (BuildContext context) => sharedPrefsProvider),\n"
-    "\t], child: const MyApp()));\n"
+    "  WidgetsFlutterBinding.ensureInitialized();\n"
+    "  SharedPrefsProvider sharedPrefsProvider = await SharedPrefsProvider.create();\n"
+    "  runApp(MultiProvider(providers: [\n"
+      "    ChangeNotifierProvider(create: (BuildContext context) => sharedPrefsProvider),\n"
+    "  ], child: const MyApp()));\n"
   "}";
 
   //TODO move as template to asset-folder
@@ -25,14 +25,14 @@ class Generator {
       "SharedPrefsProvider._internal();\n\n"
 
       "static create() async{\n"
-        "\tvar sharedPrefsProvider = SharedPrefsProvider._internal();\n"
-        "\tawait sharedPrefsProvider._init();\n"
-        "\treturn sharedPrefsProvider;\n"
+        "  var sharedPrefsProvider = SharedPrefsProvider._internal();\n"
+        "  await sharedPrefsProvider._init();\n"
+        "  return sharedPrefsProvider;\n"
       "}\n\n"
 
       "Future<void> _init() async {\n"
-      "\t_prefs = await SharedPreferences.getInstance();\n"
-      "\t///Initialization\n"
+      "  _prefs = await SharedPreferences.getInstance();\n"
+      "  ///Initialization\n"
       "}\n\n"
       "///Getter\n\n"
       "///Setter\n\n"
@@ -53,21 +53,21 @@ class Generator {
           String key =
           "key" + name.toUpperCase().substring(0, 1) + name.substring(1);
       code = code.replaceFirst(
-          "/// Keys", "/// Keys\n\tstatic const String $key = '$key';");
+          "/// Keys", "/// Keys\n  static const String $key = '$key';");
       code = code.replaceFirst("/// Values",
-          "/// Values\n\t${type.getString()} _$name = $defaultValue;");
+          "/// Values\n  ${type.getString()} _$name = $defaultValue;");
       code = code.replaceFirst("///Initialization",
-          "///Initialization\n\t\t_$name = _prefs.${type.getGetter()}($key) ?? $defaultValue;");
+          "///Initialization\n    _$name = _prefs.${type.getGetter()}($key) ?? $defaultValue;");
       code = code.replaceFirst(
-          "///Getter", "///Getter\n\t${type.getString()} get $name => _$name;");
+          "///Getter", "///Getter\n  ${type.getString()} get $name => _$name;");
       code = code.replaceFirst(
           "///Setter",
           "///Setter\n"
-              "\tset $name(${type.getString()} value) {\n"
-              "\t\t_$name = value;\n"
-              "\t\t_prefs.${type.getSetter()}($key, value);\n"
-              "\t\tnotifyListeners();\n"
-              "\t}\n");
+              "  set $name(${type.getString()} value) {\n"
+              "    _$name = value;\n"
+              "    _prefs.${type.getSetter()}($key, value);\n"
+              "    notifyListeners();\n"
+              "  }\n");
     }
     return code;
   }
