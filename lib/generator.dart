@@ -25,9 +25,8 @@ class Generator {
       "SharedPrefsProvider._internal();\n\n"
 
       "static create() async{\n"
-        "  var sharedPrefsProvider = SharedPrefsProvider._internal();\n"
-        "  await sharedPrefsProvider._init();\n"
-        "  return sharedPrefsProvider;\n"
+        "  await _instance._init();\n"
+        "  return _instance;\n"
       "}\n\n"
 
       "Future<void> _init() async {\n"
